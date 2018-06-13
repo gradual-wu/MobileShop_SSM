@@ -1,0 +1,34 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+    <tlib-version>1.0</tlib-version>
+    <short-name>myel</short-name>
+    <uri>/myel</uri>
+        <function>
+            <name>priceTwoDecimal</name>
+            <function-class>cn.wycclub.el.HtmlFilter</function-class>
+            <function-signature>java.lang.String priceTwoDecimal(java.math.BigDecimal))</function-signature>
+        </function>
+        <function>
+            <name>CollectionExist</name>
+            <function-class>cn.wycclub.el.HtmlFilter</function-class>
+            <function-signature>boolean CollectionExist(java.util.List,int)</function-signature>
+        </function>
+        <function>
+            <name>checkRow</name>
+            <function-class>cn.wycclub.el.HtmlFilter</function-class>
+            <function-signature>boolean checkRow(cn.wycclub.dto.PageResult)</function-signature>
+        </function>
+
+        <function>
+            <name>rowHeight</name>
+            <function-class>cn.wycclub.el.HtmlFilter</function-class>
+            <function-signature>int rowHeight(java.lang.Integer,java.lang.Integer)</function-signature>
+        </function>
+        <function>
+            <name>formatDate</name>
+            <function-class>cn.wycclub.el.HtmlFilter</function-class>
+            <function-signature>java.lang.String formatDate(java.util.Date)</function-signature>
+        </function>
+</taglib>

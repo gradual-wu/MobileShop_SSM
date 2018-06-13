@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wycclub.dao.mapper.ProductOrderMapper" >
+    <cache/>
+    <sql id="Order_Base_Column_List">
+        o.id, o.state, o.payment, o.uid, o.gmt_create, o.gmt_modified, po.pid, po.quantity, po.gmt_create connGmtGreate, po.gmt_modified connGmtModified
+    </sql>
+
+    <insert id="insertOrder" parameterType="OrderInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
+            select last_insert_id()
+        </selectKey>
+        insert into
+        orders(
+                id,
+                uid,
+                payment,
+                gmt_create
+        )
+        values(
+            #{id,jdbcType=INTEGER},
+            #{uid,jdbcType=INTEGER},
+            #{payment,jdbcType=DECIMAL},
+            #{gmtCreate,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="insertBatchByConn" parameterType="ProductOrderConnInfo">
+        insert into
+        product_order(
+        oid, pid, quantity, gmt_create
+        )
+        values(
+            #{oid,jdbcType=INTEGER},
+            #{pid,jdbcType=INTEGER},
+            #{quantity,jdbcType=INTEGER},
+            #{gmtCreate,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <resultMap id="orderInfoMap" type="OrderInfo">
+        <id column="id" property="id" javaType="INTEGER" />
+        <result column="uid" property="uid" javaType="INTEGER"/>
+        <result column="state" property="state" javaType="INTEGER"/>
+        <result column="payment" property="payment" javaType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+        <collection property="list" ofType="ProductOrderConnInfo">
+            <id column="id" property="oid" javaType="INTEGER" />
+            <id column="pid" property="pid" javaType="INTEGER"/>
+            <result column="quantity" property="quantity" javaType="INTEGER"/>
+            <result column="connGmtGreate" property="gmtCreate" jdbcType="TIMESTAMP" />
+            <result column="connGmtModified" property="gmtModified" jdbcType="TIMESTAMP" />
+        </collection>
+    </resultMap>
+    <select id="selectOrderByKey" parameterType="int" resultMap="orderInfoMap">
+        select
+        <include refid="Order_Base_Column_List"></include>
+        from orders o, product_order po where o.id=#{value} and o.id=po.oid
+    </select>
+
+    <select id="selectOrderByUID" parameterType="int" resultMap="orderInfoMap">
+        select
+        <include refid="Order_Base_Column_List"></include>
+        from orders o, product_order po where o.id=po.oid and o.uid=#{value}
+    </select>
+
+    <select id="selectOrderState" parameterType="int">
+        select state from orders where oid=#{value}
+    </select>
+
+    <update id="updateOrderState" parameterType="OrderInfo">
+        update orders set state=#{state} where id=#{id}
+    </update>
+
+    <select id="countSum" resultType="int">
+        select count(*) from orders
+    </select>
+
+    <select id="selectSumByPayMent" resultType="java.math.BigDecimal">
+        select sum(payment) from orders
+    </select>
+
+    <resultMap id="adminOrderInfo" type="AdminOrderInfo">
+        <id column="id" property="id" javaType="INTEGER" />
+        <result column="uid" property="uid" javaType="INTEGER"/>
+        <result column="state" property="state" javaType="INTEGER"/>
+        <result column="payment" property="payment" javaType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <select id="selectAllOrder" parameterType="pageSelect" resultMap="adminOrderInfo">
+        select
+        id, payment, state, uid, gmt_create, gmt_modified
+        from orders
+        limit #{offset},#{limit}
+    </select>
+
+    <resultMap id="connInfo" type="ProductOrderConnInfo">
+        <id column="oid" property="oid" javaType="INTEGER" />
+        <id column="pid" property="pid" javaType="INTEGER"/>
+        <result column="quantity" property="quantity" javaType="INTEGER"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <select id="selectAllConnInfo" parameterType="int" resultMap="connInfo">
+        select
+        oid, pid, quantity, gmt_create, gmt_modified
+        from product_order where oid=#{value}
+    </select>
+</mapper>
